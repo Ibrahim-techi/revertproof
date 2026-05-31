@@ -1,0 +1,56 @@
+{
+  "name": "revertproof",
+  "version": "0.1.0",
+  "description": "Prove whether a pull request can be safely reverted before it is merged.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/revertproof/revertproof.git"
+  },
+  "keywords": [
+    "github-action",
+    "pull-request",
+    "revert",
+    "rollback",
+    "ci",
+    "open-source",
+    "maintainers"
+  ],
+  "bin": {
+    "revertproof": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "verify": "npm run check && npm run test && npm run build",
+    "demo:local": "node scripts/local-demo.mjs"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "minimatch": "^10.0.3",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@vercel/ncc": "^0.38.4",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vitest": "^4.0.14"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

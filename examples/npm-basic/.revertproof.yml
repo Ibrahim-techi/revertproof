@@ -1,0 +1,11 @@
+mode: advisory
+
+checks:
+  forward:
+    - npm ci
+    - npm test
+  revert:
+    - npm ci
+    - npm test
+
+comment_mode: failures-only

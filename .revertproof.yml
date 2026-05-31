@@ -1,0 +1,40 @@
+mode: advisory
+
+checks:
+  forward:
+    - npm ci
+    - npm run check
+    - npm run test
+  revert:
+    - npm ci
+    - npm run check
+    - npm run test
+
+risk_paths:
+  workflows:
+    - ".github/workflows/**"
+  dependencies:
+    - "package.json"
+    - "package-lock.json"
+  release:
+    - "CHANGELOG.md"
+    - "action.yml"
+  public_api:
+    - "src/action.ts"
+    - "src/cli.ts"
+    - "src/core/**"
+    - "src/config/**"
+
+require_rollback_notes_for:
+  - release
+
+rollback_note_patterns:
+  - rollback
+  - "revert plan"
+  - backout
+
+ignore_paths:
+  - "README.md"
+  - "docs/**"
+
+comment_mode: failures-only

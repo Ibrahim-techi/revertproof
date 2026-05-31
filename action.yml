@@ -1,0 +1,46 @@
+name: RevertProof
+description: Prove whether a pull request can be safely reverted before it is merged.
+author: RevertProof
+
+inputs:
+  config:
+    description: Path to the RevertProof config file.
+    required: false
+    default: .revertproof.yml
+  mode:
+    description: advisory or required.
+    required: false
+    default: advisory
+  github-token:
+    description: GitHub token used to write PR comments. Defaults to github.token when omitted.
+    required: false
+  comment-mode:
+    description: always, failures-only, or never.
+    required: false
+    default: failures-only
+  base-ref:
+    description: Base ref or SHA. Defaults to pull request base SHA/ref.
+    required: false
+  head-ref:
+    description: Head ref or SHA. Defaults to pull request head SHA/ref.
+    required: false
+
+outputs:
+  status:
+    description: RevertProof status.
+  risk_level:
+    description: Computed risk level.
+  report_json_path:
+    description: Path to the JSON report.
+  report_markdown_path:
+    description: Path to the Markdown report.
+  revert_conflicted:
+    description: Whether the synthetic revert conflicted.
+  forward_checks_passed:
+    description: Whether forward checks passed.
+  revert_checks_passed:
+    description: Whether revert checks passed.
+
+runs:
+  using: node20
+  main: dist/action.js

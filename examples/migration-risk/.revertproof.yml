@@ -1,0 +1,13 @@
+mode: advisory
+
+risk_paths:
+  migrations:
+    - "db/migrations/**"
+
+require_rollback_notes_for:
+  - migrations
+
+rollback_note_patterns:
+  - rollback
+  - "migration down"
+  - backout

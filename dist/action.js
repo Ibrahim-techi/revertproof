@@ -275,14 +275,14 @@ function buildReport(options) {
         findings.push({
             code: "forward_checks_failed",
             severity: "error",
-            message: "One or more forward checks failed after the synthetic merge."
+            message: "One or more forward validation commands failed after the synthetic merge."
         });
     }
     if (options.simulation.mergeSucceeded && !options.simulation.revertSucceeded) {
         findings.push({
             code: "revert_failed",
             severity: "error",
-            message: "The synthetic revert failed.",
+            message: "The synthetic rollback failed.",
             details: options.simulation.revertOutput
         });
     }
@@ -290,14 +290,14 @@ function buildReport(options) {
         findings.push({
             code: "revert_checks_failed",
             severity: "error",
-            message: "One or more checks failed after the synthetic revert."
+            message: "One or more validation commands failed after the synthetic rollback."
         });
     }
     if (options.simulation.dirtyPathsAfterRevert.length > 0) {
         findings.push({
             code: "dirty_after_revert",
             severity: "error",
-            message: "The worktree was dirty after the synthetic revert.",
+            message: "The worktree changed after the synthetic rollback.",
             paths: options.simulation.dirtyPathsAfterRevert
         });
     }
@@ -305,7 +305,7 @@ function buildReport(options) {
         findings.push({
             code: `risk_path_${category.category}`,
             severity: "warning",
-            message: `Changed paths match the '${category.category}' risk category.`,
+            message: `Changed paths match the '${category.category}' risk-sensitive category.`,
             paths: category.paths
         });
     }
@@ -722,25 +722,25 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.renderMarkdownReport = renderMarkdownReport;
 function renderMarkdownReport(report) {
     const lines = [];
-    lines.push("## RevertProof Report");
+    lines.push("## Rollback Readiness Report");
     lines.push("");
-    lines.push(`Status: **${formatStatus(report.status)}**`);
-    lines.push(`Risk: **${report.riskLevel}**`);
+    lines.push(`Decision: **${formatStatus(report.status)}**`);
+    lines.push(`Risk level: **${formatRiskLevel(report.riskLevel)}**`);
     lines.push("");
-    lines.push("| Check | Result |");
+    lines.push("| Verification | Result |");
     lines.push("| --- | --- |");
-    lines.push(`| Forward checks | ${report.forwardChecksPassed ? "passed" : "failed"} |`);
-    lines.push(`| Synthetic revert | ${report.revertSucceeded ? "passed" : "failed"} |`);
-    lines.push(`| Revert checks | ${report.revertChecksPassed ? "passed" : "failed"} |`);
+    lines.push(`| Forward validation | ${formatPassFail(report.forwardChecksPassed)} |`);
+    lines.push(`| Synthetic rollback | ${formatPassFail(report.revertSucceeded)} |`);
+    lines.push(`| Post-rollback validation | ${formatPassFail(report.revertChecksPassed)} |`);
     lines.push("");
     if (report.findings.length === 0) {
-        lines.push("No findings.");
+        lines.push("No rollback blockers or configured risk warnings were found.");
     }
     else {
         lines.push("### Findings");
         lines.push("");
         for (const finding of report.findings) {
-            lines.push(`- **${finding.severity.toUpperCase()} ${finding.code}**: ${finding.message}`);
+            lines.push(`- **${formatSeverity(finding.severity)}: ${formatFindingCode(finding.code)}** - ${finding.message}`);
             if (finding.paths && finding.paths.length > 0) {
                 lines.push(`  Paths: ${finding.paths.map((path) => `\`${path}\``).join(", ")}`);
             }
@@ -748,14 +748,16 @@ function renderMarkdownReport(report) {
     }
     if (report.riskCategories.length > 0) {
         lines.push("");
-        lines.push("### Risk Categories");
+        lines.push("### Risk-Sensitive Paths");
         lines.push("");
         for (const category of report.riskCategories) {
-            lines.push(`- **${category.category}**: ${category.paths.map((path) => `\`${path}\``).join(", ")}`);
+            lines.push(`- **${formatCategory(category.category)}**: ${category.paths
+                .map((path) => `\`${path}\``)
+                .join(", ")}`);
         }
     }
     lines.push("");
-    lines.push("### Changed Paths");
+    lines.push("### Reviewed Paths");
     lines.push("");
     if (report.changedPaths.length === 0) {
         lines.push("No non-ignored changed paths.");
@@ -767,30 +769,92 @@ function renderMarkdownReport(report) {
     }
     if (report.ignoredPaths.length > 0) {
         lines.push("");
-        lines.push("Ignored paths:");
+        lines.push("Ignored by configuration:");
         for (const path of report.ignoredPaths) {
             lines.push(`- \`${path}\``);
         }
     }
-    appendCommandSection(lines, "Forward Command Results", report.commandResults.forward);
-    appendCommandSection(lines, "Revert Command Results", report.commandResults.revert);
+    appendCommandSection(lines, "Forward Validation Commands", report.commandResults.forward);
+    appendCommandSection(lines, "Post-Rollback Validation Commands", report.commandResults.revert);
     lines.push("");
-    lines.push("<sub>Generated by RevertProof.</sub>");
+    lines.push("<sub>Prepared by RevertProof.</sub>");
     return `${lines.join("\n")}\n`;
 }
 function formatStatus(status) {
     switch (status) {
         case "revert-safe":
-            return "revert-safe";
+            return "Revert safe";
         case "revert-risky":
-            return "revert-risky";
+            return "Revert risky";
         case "not-revert-safe":
-            return "not-revert-safe";
+            return "Not revert safe";
         case "not-applicable":
-            return "not-applicable";
+            return "Not applicable";
         default:
             return status;
     }
+}
+function formatRiskLevel(riskLevel) {
+    switch (riskLevel) {
+        case "none":
+            return "None";
+        case "low":
+            return "Low";
+        case "medium":
+            return "Medium";
+        case "high":
+            return "High";
+        default:
+            return riskLevel;
+    }
+}
+function formatPassFail(passed) {
+    return passed ? "passed" : "failed";
+}
+function formatSeverity(severity) {
+    switch (severity) {
+        case "error":
+            return "Blocker";
+        case "warning":
+            return "Warning";
+        case "info":
+            return "Info";
+        default:
+            return severity;
+    }
+}
+function formatFindingCode(code) {
+    if (code.startsWith("risk_path_")) {
+        return `Risk-sensitive ${formatCategory(code.replace("risk_path_", ""))} change`;
+    }
+    if (code.startsWith("missing_rollback_note_")) {
+        return `Missing ${formatCategory(code.replace("missing_rollback_note_", ""))} rollback note`;
+    }
+    switch (code) {
+        case "merge_failed":
+            return "Synthetic merge failed";
+        case "forward_checks_failed":
+            return "Forward validation failed";
+        case "revert_failed":
+            return "Synthetic rollback failed";
+        case "revert_checks_failed":
+            return "Post-rollback validation failed";
+        case "dirty_after_revert":
+            return "Worktree changed after rollback";
+        default:
+            return code
+                .split("_")
+                .filter(Boolean)
+                .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+                .join(" ");
+    }
+}
+function formatCategory(category) {
+    return category
+        .split("_")
+        .filter(Boolean)
+        .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+        .join(" ");
 }
 function appendCommandSection(lines, title, results) {
     if (results.length === 0) {

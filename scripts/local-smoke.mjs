@@ -8,16 +8,16 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cliPath = join(projectRoot, "dist", "cli.js");
-const demoRoot = mkdtempSync(join(tmpdir(), "revertproof-local-demo-"));
+const workspaceRoot = mkdtempSync(join(tmpdir(), "revertproof-local-smoke-"));
 
 if (!existsSync(cliPath)) {
   run("npm", ["run", "build"], projectRoot);
 }
 
-const safeRepo = createRepo("safe-pr");
-writeFeatureChange(safeRepo, "app.txt", "base\n", "feature\n");
+const readyRepo = createRepo("revert-ready-pr");
+writeFeatureChange(readyRepo, "app.txt", "base\n", "feature\n");
 writeFileSync(
-  join(safeRepo, ".revertproof.yml"),
+  join(readyRepo, ".revertproof.yml"),
   `checks:
   forward:
     - node -e "const fs=require('fs');process.exit(fs.readFileSync('app.txt','utf8').includes('feature')?0:1)"
@@ -27,10 +27,10 @@ writeFileSync(
   "utf8"
 );
 
-const unsafeRepo = createRepo("unsafe-pr");
-writeFeatureChange(unsafeRepo, "state.txt", "old\n", "new\n");
+const blockedRepo = createRepo("rollback-blocked-pr");
+writeFeatureChange(blockedRepo, "state.txt", "old\n", "new\n");
 writeFileSync(
-  join(unsafeRepo, ".revertproof.yml"),
+  join(blockedRepo, ".revertproof.yml"),
   `checks:
   forward: []
   revert:
@@ -39,37 +39,37 @@ writeFileSync(
   "utf8"
 );
 
-const safe = runRevertProof(safeRepo, false);
-const unsafe = runRevertProof(unsafeRepo, true);
+const ready = runRevertProof(readyRepo, false);
+const blocked = runRevertProof(blockedRepo, true);
 
-process.stdout.write(`RevertProof local demo
+process.stdout.write(`RevertProof local verification
 
-Demo workspace:
-${demoRoot}
+Workspace:
+${workspaceRoot}
 
-1. Safe PR simulation
-   Repo: ${safeRepo}
-   Status: ${safe.report.status}
-   Exit code: ${safe.exitCode}
-   Report: ${join(safeRepo, "revertproof-output", "revertproof-report.md")}
+1. Revert-ready pull request
+   Repository: ${readyRepo}
+   Status: ${ready.report.status}
+   Exit code: ${ready.exitCode}
+   Report: ${join(readyRepo, "revertproof-output", "revertproof-report.md")}
 
-2. Unsafe PR simulation
-   Repo: ${unsafeRepo}
-   Status: ${unsafe.report.status}
-   Exit code: ${unsafe.exitCode}
-   Report: ${join(unsafeRepo, "revertproof-output", "revertproof-report.md")}
+2. Rollback-blocked pull request
+   Repository: ${blockedRepo}
+   Status: ${blocked.report.status}
+   Exit code: ${blocked.exitCode}
+   Report: ${join(blockedRepo, "revertproof-output", "revertproof-report.md")}
 
-Meaning:
-- revert-safe means the PR merged, checks passed, the synthetic revert worked, and revert checks passed.
+Status guide:
+- revert-safe means the PR merged, checks passed, the synthetic rollback worked, and post-rollback checks passed.
 - not-revert-safe means RevertProof found a rollback problem before the PR reaches production.
 `);
 
 function createRepo(name) {
-  const repo = join(demoRoot, name);
+  const repo = join(workspaceRoot, name);
   mkdirSync(repo, { recursive: true });
   git(repo, ["init", "-b", "main"]);
   git(repo, ["config", "user.name", "RevertProof Demo"]);
-  git(repo, ["config", "user.email", "demo@example.invalid"]);
+  git(repo, ["config", "user.email", "local-verification@example.invalid"]);
   return repo;
 }
 

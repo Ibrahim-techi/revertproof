@@ -8,4 +8,4 @@ Before opening a pull request:
 2. Include tests for behavior changes.
 3. Document user-facing changes.
 
-RevertProof is intentionally narrow: it proves revertability before merge. Keep proposed features close to that mission.
+RevertProof is intentionally narrow: it evaluates rollback readiness before merge. Keep proposed features close to that mission.

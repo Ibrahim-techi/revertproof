@@ -10,4 +10,4 @@ Recommended defaults:
 - truncate logs before sharing them publicly;
 - start in advisory mode.
 
-RevertProof proves revertability. It does not prove correctness, safety, or malicious intent.
+RevertProof evaluates rollback readiness. It does not prove correctness, production safety, or malicious intent.

@@ -42,7 +42,7 @@ export function buildReport(options: BuildReportOptions): RevertProofReport {
     findings.push({
       code: "forward_checks_failed",
       severity: "error",
-      message: "One or more forward checks failed after the synthetic merge."
+      message: "One or more forward validation commands failed after the synthetic merge."
     });
   }
 
@@ -50,7 +50,7 @@ export function buildReport(options: BuildReportOptions): RevertProofReport {
     findings.push({
       code: "revert_failed",
       severity: "error",
-      message: "The synthetic revert failed.",
+      message: "The synthetic rollback failed.",
       details: options.simulation.revertOutput
     });
   }
@@ -59,7 +59,7 @@ export function buildReport(options: BuildReportOptions): RevertProofReport {
     findings.push({
       code: "revert_checks_failed",
       severity: "error",
-      message: "One or more checks failed after the synthetic revert."
+      message: "One or more validation commands failed after the synthetic rollback."
     });
   }
 
@@ -67,7 +67,7 @@ export function buildReport(options: BuildReportOptions): RevertProofReport {
     findings.push({
       code: "dirty_after_revert",
       severity: "error",
-      message: "The worktree was dirty after the synthetic revert.",
+      message: "The worktree changed after the synthetic rollback.",
       paths: options.simulation.dirtyPathsAfterRevert
     });
   }
@@ -76,7 +76,7 @@ export function buildReport(options: BuildReportOptions): RevertProofReport {
     findings.push({
       code: `risk_path_${category.category}`,
       severity: "warning",
-      message: `Changed paths match the '${category.category}' risk category.`,
+      message: `Changed paths match the '${category.category}' risk-sensitive category.`,
       paths: category.paths
     });
   }

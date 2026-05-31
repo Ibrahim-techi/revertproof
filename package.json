@@ -32,7 +32,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "verify": "npm run check && npm run test && npm run build",
-    "demo:local": "node scripts/local-demo.mjs"
+    "verify:local": "node scripts/local-smoke.mjs"
   },
   "dependencies": {
     "commander": "^14.0.2",

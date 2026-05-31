@@ -11,16 +11,16 @@ npx revertproof check --base origin/main --head HEAD
 
 You can run this from the repository root or from a nested folder inside the repository. RevertProof resolves the Git root before it compares changed paths.
 
-## Try the bundled demo
+## Run local verification
 
 When working from the RevertProof repository itself, run:
 
 ```bash
 npm install
-npm run demo:local
+npm run verify:local
 ```
 
-The demo creates temporary repositories and shows one `revert-safe` PR and one `not-revert-safe` PR.
+The verification script creates temporary repositories and shows one `revert-safe` PR and one `not-revert-safe` PR.
 
 ## GitHub Action
 

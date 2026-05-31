@@ -8,14 +8,14 @@ inputs:
     required: false
     default: .revertproof.yml
   mode:
-    description: advisory or required.
+    description: Run mode. Use advisory to report only, or required to fail rollback blockers.
     required: false
     default: advisory
   github-token:
     description: GitHub token used to write PR comments. Defaults to github.token when omitted.
     required: false
   comment-mode:
-    description: always, failures-only, or never.
+    description: PR comment policy. Use always, failures-only, or never.
     required: false
     default: failures-only
   base-ref:
@@ -27,7 +27,7 @@ inputs:
 
 outputs:
   status:
-    description: RevertProof status.
+    description: Rollback readiness status.
   risk_level:
     description: Computed risk level.
   report_json_path:
@@ -35,11 +35,11 @@ outputs:
   report_markdown_path:
     description: Path to the Markdown report.
   revert_conflicted:
-    description: Whether the synthetic revert conflicted.
+    description: Whether the synthetic rollback conflicted.
   forward_checks_passed:
-    description: Whether forward checks passed.
+    description: Whether forward validation commands passed.
   revert_checks_passed:
-    description: Whether revert checks passed.
+    description: Whether post-rollback validation commands passed.
 
 runs:
   using: node20

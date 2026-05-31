@@ -2,12 +2,12 @@
 
 ## Revert-safe
 
-The PR merges, checks pass, the synthetic revert applies cleanly, and checks still pass.
+The pull request merges, forward validation passes, the synthetic rollback applies cleanly, and post-rollback validation still passes.
 
 ## Not revert-safe
 
-The PR merges and forward checks pass, but after a synthetic revert the configured checks fail.
+The pull request cannot be proven rollback-ready because the merge, forward validation, synthetic rollback, or post-rollback validation failed.
 
 ## Revert-risky
 
-The PR can be reverted, but it touches configured high-risk paths such as migrations or release files without rollback notes.
+The pull request is mechanically rollback-ready, but it touches configured risk-sensitive paths such as migrations, release files, or workflows.

@@ -21,7 +21,7 @@ describe("renderMarkdownReport", () => {
         {
           code: "revert_failed",
           severity: "error",
-          message: "The synthetic revert failed."
+          message: "The synthetic rollback failed."
         }
       ],
       commandResults: {
@@ -41,8 +41,8 @@ describe("renderMarkdownReport", () => {
 
     const markdown = renderMarkdownReport(report);
 
-    expect(markdown).toContain("Status: **not-revert-safe**");
-    expect(markdown).toContain("revert_failed");
+    expect(markdown).toContain("Decision: **Not revert safe**");
+    expect(markdown).toContain("Synthetic rollback failed");
     expect(markdown).toContain("npm test");
   });
 });

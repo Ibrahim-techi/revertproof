@@ -8,19 +8,19 @@ The core question is simple:
 
 RevertProof simulates a merge, runs your checks, reverts the merged change, runs checks again, and reports whether the PR is revert-safe, revert-risky, or not revert-safe.
 
-## Try It Locally
+## Local Verification
 
 From this repository:
 
 ```bash
 npm install
-npm run demo:local
+npm run verify:local
 ```
 
-The demo creates two temporary Git repositories:
+The local verification script creates two temporary Git repositories:
 
-- one PR that is `revert-safe`;
-- one PR that is `not-revert-safe`.
+- one pull request that is `revert-safe`;
+- one pull request that is `not-revert-safe`.
 
 Open the printed `revertproof-report.md` files to see what maintainers would see in CI.
 
@@ -67,9 +67,9 @@ You can run the command from the repository root or from any subdirectory inside
 
 ## Statuses
 
-- `revert-safe`: the synthetic merge worked, forward checks passed, the synthetic revert worked, and revert checks passed.
+- `revert-safe`: the synthetic merge worked, forward checks passed, the synthetic rollback worked, and post-rollback checks passed.
 - `revert-risky`: the PR can be reverted mechanically, but it touches configured risk paths or lacks required rollback notes.
-- `not-revert-safe`: the merge, forward checks, revert, or post-revert checks failed.
+- `not-revert-safe`: the merge, forward checks, synthetic rollback, or post-rollback checks failed.
 - `not-applicable`: every changed path was ignored by configuration.
 
 ## Configuration
@@ -120,7 +120,7 @@ rollback_note_patterns:
 
 - simulates the PR merge;
 - runs forward checks;
-- attempts a synthetic revert;
+- attempts a synthetic rollback;
 - runs revert checks;
 - detects risky changed paths;
 - reports missing rollback notes for configured risk categories;

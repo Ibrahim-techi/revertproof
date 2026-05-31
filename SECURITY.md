@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 ```
 
-Do not run RevertProof with secrets on untrusted fork pull requests unless you fully trust the executed checks.
+Do not run RevertProof with secrets on untrusted fork pull requests unless you fully trust the configured validation commands.
 
 ## Reporting Security Issues
 

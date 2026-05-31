@@ -693,7 +693,7 @@ async function writeReports(report, outputDir) {
 
 // src/cli.ts
 var program = new import_commander.Command();
-program.name("revertproof").description("Prove whether a pull request can be safely reverted before it is merged.").version("0.1.0");
+program.name("revertproof").description("Prove whether a pull request can be safely reverted before it is merged.").version("0.1.1");
 program.command("check").description("Run RevertProof against two refs.").option("--base <ref>", "Base ref or SHA.", "origin/main").option("--head <ref>", "Head ref or SHA.", "HEAD").option("--repo <path>", "Repository path.", process.cwd()).option("--config <path>", "Config file path.", ".revertproof.yml").option("--mode <mode>", "advisory or required.").option("--comment-mode <mode>", "always, failures-only, or never.").option("--pr-text <path>", "Optional file containing pull request title/body text.").option("--output-dir <path>", "Directory for JSON and Markdown reports.", "revertproof-output").action(async (options) => {
   const mode = parseMode(options.mode);
   const commentMode = parseCommentMode(options.commentMode);

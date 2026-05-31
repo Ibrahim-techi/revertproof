@@ -1,11 +1,11 @@
 {
   "name": "revertproof",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Prove whether a pull request can be safely reverted before it is merged.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/revertproof/revertproof.git"
+    "url": "https://github.com/Ibrahim-techi/revertproof.git"
   },
   "keywords": [
     "github-action",

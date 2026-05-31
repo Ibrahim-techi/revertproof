@@ -15,7 +15,7 @@ const program = new Command();
 program
   .name("revertproof")
   .description("Prove whether a pull request can be safely reverted before it is merged.")
-  .version("0.1.0");
+  .version("0.1.1");
 
 program
   .command("check")

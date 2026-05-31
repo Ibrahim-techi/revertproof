@@ -1,12 +1,12 @@
 # RevertProof
 
-RevertProof checks whether a pull request can be safely backed out before it is merged.
+RevertProof checks whether a pull request is rollback-ready before it is merged.
 
 The core question is simple:
 
 > If this PR breaks production, can we cleanly revert it?
 
-RevertProof simulates a merge, runs your checks, reverts the merged change, runs checks again, and reports whether the PR is revert-safe, revert-risky, or not revert-safe.
+RevertProof simulates a merge, runs forward validation commands, performs a synthetic rollback, runs post-rollback validation commands, and reports whether the pull request is `revert-safe`, `revert-risky`, or `not-revert-safe`.
 
 ## Local Verification
 
@@ -23,12 +23,6 @@ The local verification script creates two temporary Git repositories:
 - one pull request that is `not-revert-safe`.
 
 Open the printed `revertproof-report.md` files to see what maintainers would see in CI.
-
-## Install
-
-```bash
-npm install --save-dev revertproof
-```
 
 ## GitHub Action
 
@@ -52,15 +46,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: revertproof/revertproof@v0
+      - uses: Ibrahim-techi/revertproof@v0.1.1
         with:
           mode: advisory
 ```
 
 ## CLI
 
+From a local checkout of this repository:
+
 ```bash
-npx revertproof check --base origin/main --head HEAD
+npm install
+npm run build
+node dist/cli.js check --base origin/main --head HEAD
 ```
 
 You can run the command from the repository root or from any subdirectory inside the repository. RevertProof resolves the Git root before comparing paths.
@@ -119,9 +117,9 @@ rollback_note_patterns:
 ## What It Does
 
 - simulates the PR merge;
-- runs forward checks;
+- runs forward validation commands;
 - attempts a synthetic rollback;
-- runs revert checks;
+- runs post-rollback validation commands;
 - detects risky changed paths;
 - reports missing rollback notes for configured risk categories;
 - emits Markdown and JSON reports.
@@ -136,6 +134,3 @@ rollback_note_patterns:
 ## Security
 
 RevertProof runs only the commands you configure. Avoid running privileged or secret-bearing jobs on untrusted fork pull requests. Prefer `pull_request` over `pull_request_target`.
-
-
-Testing RevertProof in a real Pull Request.

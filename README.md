@@ -136,3 +136,6 @@ rollback_note_patterns:
 ## Security
 
 RevertProof runs only the commands you configure. Avoid running privileged or secret-bearing jobs on untrusted fork pull requests. Prefer `pull_request` over `pull_request_target`.
+
+
+Testing RevertProof in a real Pull Request.
